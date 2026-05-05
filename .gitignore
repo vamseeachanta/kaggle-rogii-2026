@@ -1,0 +1,39 @@
+# Dataset — 1.33 GB, downloaded via scripts/download_data.sh, not tracked.
+data/raw/
+data/interim/
+data/processed/
+!data/raw/.gitkeep
+!data/interim/.gitkeep
+!data/processed/.gitkeep
+
+# Python / uv
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+build/
+dist/
+
+# Notebook artifacts
+.ipynb_checkpoints/
+notebooks/**/*.ipynb_checkpoints/
+
+# Kaggle artifacts
+*.zip
+submissions/
+.kaggle/
+
+# Secrets — never commit
+kaggle.json
+.env
+.env.*
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+*.swp
