@@ -1,10 +1,8 @@
-# Dataset — 1.33 GB, downloaded via scripts/download_data.sh, not tracked.
-data/raw/
-data/interim/
-data/processed/
-!data/raw/.gitkeep
-!data/interim/.gitkeep
-!data/processed/.gitkeep
+# Dataset lives on /mnt/ace; data/{raw,interim,processed} are symlinks.
+# Match both the directory form and the symlink form by omitting trailing slash.
+data/raw
+data/interim
+data/processed
 
 # Python / uv
 .venv/

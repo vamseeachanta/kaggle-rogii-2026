@@ -18,18 +18,22 @@ See `docs/competition-overview.md` for the full problem and dataset spec capture
 
 ## Disk layout
 
+The dataset (~1.33 GB, 2,327 files) lives on a large-disk mount, **not** inside the repo. The repo's `data/` subfolders are symlinks pointing there. Default target: `/mnt/ace/kaggle-rogii-2026/data/`.
+
 ```
-kaggle-rogii-2026/
-├── data/                # gitignored (1.33 GB raw dataset)
-│   ├── raw/             # downloaded archive + extracted CSVs/PNGs/PPTX
-│   ├── interim/         # per-well intermediate artifacts
-│   └── processed/       # model-ready features
+kaggle-rogii-2026/                              # repo (on /mnt/local-analysis)
+├── data/
+│   ├── raw       → /mnt/ace/kaggle-rogii-2026/data/raw       (gitignored, 1.33 GB)
+│   ├── interim   → /mnt/ace/kaggle-rogii-2026/data/interim
+│   └── processed → /mnt/ace/kaggle-rogii-2026/data/processed
 ├── docs/                # competition spec, decisions log, experiment notes
 ├── notebooks/           # exploration + Kaggle submission notebooks
-├── scripts/             # data download, verification, submission helpers
+├── scripts/             # bootstrap, download, verification, submission helpers
 ├── src/rogii/           # importable code (features, models, eval)
 └── tests/               # pytest
 ```
+
+On a new machine, recreate the symlinks via `./scripts/bootstrap_data_dir.sh` (override the default with `DATA_ROOT=/path/to/big-disk/kaggle-rogii-2026/data ./scripts/bootstrap_data_dir.sh`).
 
 ---
 
@@ -49,12 +53,13 @@ kaggle-rogii-2026/
 
 ### Automated bootstrap
 
-Once `~/.kaggle/kaggle.json` is in place:
-
 ```bash
+./scripts/bootstrap_data_dir.sh   # creates data/{raw,interim,processed} symlinks (one-time per machine)
 ./scripts/download_data.sh        # ~1.33 GB, ~2,327 files, expands under data/raw/
 uv run scripts/verify_data.py     # sanity check counts and sizes
 ```
+
+The symlink target defaults to `/mnt/ace/kaggle-rogii-2026/data/`. Override per machine: `DATA_ROOT=/path/to/big-disk/kaggle-rogii-2026/data ./scripts/bootstrap_data_dir.sh`.
 
 `uv` provides the Kaggle CLI on demand (`uv run --with kaggle ...`) — no global install needed.
 
