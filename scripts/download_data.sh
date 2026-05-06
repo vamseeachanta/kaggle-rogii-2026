@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 # Download the ROGII Wellbore Geology competition dataset.
 # Prereqs:
-#   - ~/.kaggle/kaggle.json (chmod 600)
+#   - Kaggle CLI authenticated. Either:
+#       legacy:  ~/.kaggle/kaggle.json   (username + key pair)
+#       OAuth:   ~/.kaggle/credentials.json   (from `kaggle auth login`)
+#       env-var: KAGGLE_API_TOKEN or KAGGLE_API_V1_TOKEN_PATH
 #   - Competition rules accepted on Kaggle
 #   - data/raw symlink set up (run scripts/bootstrap_data_dir.sh first if cloning fresh)
 
@@ -20,10 +23,12 @@ fi
 RAW_DIR=$(readlink -f "${RAW_DIR_LINK}")
 echo "Data target: ${RAW_DIR}"
 
-if [[ ! -f "${HOME}/.kaggle/kaggle.json" ]]; then
-    echo "ERROR: ~/.kaggle/kaggle.json not found." >&2
-    echo "  1. Visit https://www.kaggle.com/settings and click 'Create New Token'." >&2
-    echo "  2. mkdir -p ~/.kaggle && mv kaggle.json ~/.kaggle/ && chmod 600 ~/.kaggle/kaggle.json" >&2
+# Probe auth via a lightweight call that requires credentials but transfers no data.
+echo "Verifying Kaggle auth..."
+if ! uv run --quiet --with kaggle kaggle competitions list -s rogii >/dev/null 2>&1; then
+    echo "ERROR: Kaggle CLI auth failed." >&2
+    echo "  Either run 'kaggle auth login' (OAuth) or place a kaggle.json at ~/.kaggle/kaggle.json (legacy)." >&2
+    echo "  See https://github.com/Kaggle/kaggle-cli/blob/main/docs/README.md#authentication" >&2
     exit 1
 fi
 
