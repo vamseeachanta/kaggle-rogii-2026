@@ -1,0 +1,14 @@
+{
+  "id": "aceengineer/rogii-baseline-carry-forward-tvt-input",
+  "title": "ROGII baseline — carry-forward TVT_input",
+  "code_file": "notebook.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "dataset_sources": [],
+  "competition_sources": ["rogii-wellbore-geology-prediction"],
+  "kernel_sources": []
+}
