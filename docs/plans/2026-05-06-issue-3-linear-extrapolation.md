@@ -1,10 +1,10 @@
-# Plan for #1: Phase 0.5 — Linear extrapolation baseline
+# Plan for #3: Phase 0.5 — Linear extrapolation baseline
 
 > **Status:** plan-review
 > **Tier:** T1
 > **Date:** 2026-05-06
-> **Issue:** https://github.com/vamseeachanta/kaggle-rogii-2026/issues/1
-> **Review artifacts:** `scripts/review/results/2026-05-06-plan-1-claude.md`
+> **Issue:** https://github.com/vamseeachanta/kaggle-rogii-2026/issues/3
+> **Review artifacts:** `scripts/review/results/2026-05-06-plan-3-claude.md`
 
 ---
 
@@ -60,7 +60,7 @@ A `predict_linear_extrap(h, n_recent)` function and an evaluation notebook that 
 | **Hypothesis** | Linear extrapolation from the last ~200 heel rows beats carry-forward on the majority of wells, because most wells drift through the toe rather than staying flat. |
 | **Experiment** | Same 10-well sample (RNG seed = 0, same `wells = list(rng.choice(wells, 10, replace=False))` call as in `10_dtw_alignment.ipynb`). Compute per-well eval-zone RMSE for carry-forward and linear extrapolation across `n_recent ∈ {50, 100, 200, 500, ALL_HEEL}`. Metric is RMSE on the eval-zone rows only. |
 | **Predicted outcome** | Linear wins on **≥ 6 / 10 wells** at `n_recent = 200`. The aggregate-RMSE band 6–10 ft is a self-calibration prior (not used in the decision rule) — the rule looks only at the wins-count, which is fully falsifiable. |
-| **Decision rule** | **Canonical n_recent = 200** (locked in advance to avoid data-leak from sweep cherry-picking). If linear @ n_recent=200 wins on ≥ 6 / 10 → adopt as the new Phase 0 floor; update issue [#2](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/2) to retarget Phase 1 v2 against the new bar. If wins on < 6 / 10 → keep carry-forward as floor; record per-well failure mode and consider regime-classifier before Phase 1 v2. Other `n_recent` values are reported for diagnostic context only — they cannot flip the floor decision. |
+| **Decision rule** | **Canonical n_recent = 200** (locked in advance to avoid data-leak from sweep cherry-picking). If linear @ n_recent=200 wins on ≥ 6 / 10 → adopt as the new Phase 0 floor; update issue [#1](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/1) to retarget Phase 1 v2 against the new bar. If wins on < 6 / 10 → keep carry-forward as floor; record per-well failure mode and consider regime-classifier before Phase 1 v2. Other `n_recent` values are reported for diagnostic context only — they cannot flip the floor decision. |
 
 ---
 
@@ -83,7 +83,7 @@ A `predict_linear_extrap(h, n_recent)` function and an evaluation notebook that 
 - [ ] `notebooks/05_linear_extrapolation.ipynb` runs end-to-end via `nbclient` with no errors.
 - [ ] Comparison table prints per-well RMSE for both methods at every `n_recent` value swept.
 - [ ] Aggregate (mean) RMSE recorded in `docs/decisions.md` 2026-05-06 entry.
-- [ ] Decision-rule branch is followed: either (a) issue [#2](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/2) updated with new floor, OR (b) carry-forward kept as floor with documented reason.
+- [ ] Decision-rule branch is followed: either (a) issue [#1](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/1) updated with new floor, OR (b) carry-forward kept as floor with documented reason.
 - [ ] Same 10 wells as `10_dtw_alignment.ipynb` (verifiable by `wells` list match).
 - [ ] Each well's predicted TVT in the eval zone is **clipped** to `[heel_min - 1.5 × heel_drift, heel_max + 1.5 × heel_drift]` to prevent slope blow-up; clip-rate per well reported.
 - [ ] Decisions.md entry **explicitly notes the n=10 sample-size limitation** and proposes a follow-up at n=50 wells if linear becomes the new floor.
@@ -116,4 +116,4 @@ Revisions from review:
 
 ## Tier justification
 
-**T1.** Single new module (~50 lines), single notebook (~5 cells), no new infrastructure, ≤ 60 min wall-clock. Outcome decides one parameter (the floor RMSE) used by [#2](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/2); not load-bearing for any other phase.
+**T1.** Single new module (~50 lines), single notebook (~5 cells), no new infrastructure, ≤ 60 min wall-clock. Outcome decides one parameter (the floor RMSE) used by [#1](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/1); not load-bearing for any other phase.

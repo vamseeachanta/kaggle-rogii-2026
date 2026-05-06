@@ -1,8 +1,8 @@
-# Adversarial review — Plan #1 (Phase 0.5 linear extrapolation)
+# Adversarial review — Plan #3 (Phase 0.5 linear extrapolation)
 
 **Reviewer:** Claude (self-review)
 **Stance:** Adversarial. Assume the plan has defects until proven otherwise. No praise; no restatement; only what's wrong, missing, or risky.
-**Plan reviewed:** `docs/plans/2026-05-06-issue-1-linear-extrapolation.md`
+**Plan reviewed:** `docs/plans/2026-05-06-issue-3-linear-extrapolation.md`
 **Plan SHA:** local pre-commit (will record after first commit)
 **Date:** 2026-05-06
 **Verdict:** **MINOR**
@@ -86,4 +86,4 @@ Counted: `00_baseline_carry_forward.ipynb`, `10_dtw_alignment.ipynb`, `correlati
 2. Clipping is an acceptance criterion (Finding 3).
 3. decisions.md write-up acknowledges n=10 sample-size limitation (Finding 4).
 
-After revisions, the plan can post to GH issue [#1](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/1) with `status:plan-review`. **User approval gate is load-bearing — never self-approve.**
+After revisions, the plan can post to GH issue [#3](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/3) with `status:plan-review`. **User approval gate is load-bearing — never self-approve.**
