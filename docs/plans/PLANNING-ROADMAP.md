@@ -12,16 +12,17 @@ To answer "what's the right next plan to draft?" and "what can be implemented in
 
 | # | Title | Tier | Plan status | Implementation status |
 |---|---|---|---|---|
-| [#1](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/1) | Phase 1 v2 — Heel-as-reference DTW with advancing anchor | T2 | not drafted | blocked on plan |
-| [#2](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/2) | Phase 2 — Offset-well features and pad-aware CV | T3 | not drafted | blocked on plan |
+| [#1](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/1) | Phase 1 v2 — Heel-as-reference DTW with advancing anchor | T2 | **plan-review** | awaits user approval; impl gated on research-and-data phase |
+| [#2](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/2) | Phase 2 — Offset-well features and pad-aware CV | T3 | **plan-review** | awaits user approval; impl gated on research-and-data phase |
 | [#3](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/3) | Phase 0.5 — Linear extrapolation baseline | T1 | **plan-approved** ✅ | ready to implement |
-| [#4](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/4) | Phase 3 — GBDT regressor over combined features | T2 | not drafted | blocked on plan |
-| [#5](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/5) | Research — public datasets and prior art | T2 | not drafted | blocked on plan |
-| [#6](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/6) | Submit carry-forward kernel to leaderboard | T1 | not drafted | blocked on [#9](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/9) and plan |
-| [#7](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/7) | Phase 4 — Sequence model with regime auxiliary head | T3 | not drafted | blocked on plan |
-| [#8](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/8) | Phase 5 — Ensembling + submission packaging | T2 | not drafted | blocked on plan |
-| [#9](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/9) | BUG — Kaggle path-detection infinite loop | T1 | **plan-review** | awaiting user approval |
-| [llm-wiki#40](https://github.com/vamseeachanta/llm-wiki/issues/40) | Reservoir-engineering literature ingest | T3 | not drafted | blocked on plan |
+| [#4](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/4) | Phase 3 — GBDT regressor over combined features | T2 | **plan deferred** | not drafting until research-and-data phase landed |
+| [#5](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/5) | Research — public datasets and prior art (Kaggle-side catalog) | T2 | **plan-review** | **GATING — block on this + #40 + worldenergydata#392** |
+| [#6](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/6) | Submit carry-forward kernel to leaderboard | T1 | **plan-review** | blocked on [#9](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/9); admin only |
+| [#7](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/7) | Phase 4 — Sequence model with regime auxiliary head | T3 | **plan deferred** | not drafting until research-and-data phase landed |
+| [#8](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/8) | Phase 5 — Ensembling + submission packaging | T2 | **plan deferred** | not drafting until research-and-data phase landed |
+| [#9](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/9) | BUG — Kaggle path-detection infinite loop | T1 | **plan-review** | T1 unblocker; can land independently |
+| [llm-wiki#40](https://github.com/vamseeachanta/llm-wiki/issues/40) | Reservoir-engineering literature ingest | T3 | **plan-review** | **GATING — research substrate** |
+| [worldenergydata#392](https://github.com/vamseeachanta/worldenergydata/issues/392) | Public well-log datasets (Kaggle ROGII companion ingest) | T3 | not drafted (worldenergydata-side) | **GATING — public-data substrate** |
 | [workspace-hub#2651](https://github.com/vamseeachanta/workspace-hub/issues/2651) | PPTX → PDF on ace-linux-2 | T1 | not drafted (tracked in workspace-hub) | blocked on machine handoff |
 
 ---
@@ -87,50 +88,72 @@ Optimistic finish: ~7 weeks of work. Aggressive but feasible inside the 13-week 
 
 ---
 
-## Recommended drafting order — **revised 2026-05-06 per user direction**
+## Recommended drafting + implementation order — **revised 2026-05-06 (gating-phase strategy)**
 
-User direction (2026-05-06): "what literature or public data we can procure, we should do so ahead of time and then submit our best solution." Research-and-data threads now drafted *before* the modeling tracks so their outputs inform every modeling decision.
+User direction (2026-05-06, second clarification): "for planning any of this technical work, we should get good research and data. so llm-wiki readiness (into the llm-wiki repo), and any public related data into worldenergydata is very important. Let us do a thorough research and planning for these issues; following these issues being executed to satisfaction, we will have to then start planning the other work."
 
-Draft plans in this order:
+The research-and-data trio is now a **hard gate** on the modeling-tail planning. The "best solution" mandate means we don't draft modeling architecture in a vacuum; we draft it *after* the literature substrate and the public-data ingestion exist.
 
-1. **[#5](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/5) (research, public datasets and prior art)** — T2. **Promoted to position 1.** Output: `docs/prior-art.md` summarizing competition-relevant datasets and ML-for-geosteering literature. Informs every downstream modeling plan.
-2. **[llm-wiki#40](https://github.com/vamseeachanta/llm-wiki/issues/40) (reservoir-engineering literature ingest)** — T3. **Promoted to position 2.** Mines the user's local PDF corpus on `/mnt/ace` (~30,499 PDFs) plus public sources; output lands in `vamseeachanta/llm-wiki`. Multi-week task; the *plan* is cheap, the *implementation* is what runs in the background.
-3. **[#1](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/1) (Phase 1 v2 DTW)** — T2.
-4. **[#2](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/2) (Phase 2 offset wells)** — T3.
-5. **[#6](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/6) (submit kernel)** — T1.
-6. **[#4](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/4) (Phase 3 GBDT)** — T2.
-7. **[#7](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/7) (Phase 4 sequence)** — T3.
-8. **[#8](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/8) (Phase 5 ensemble)** — T2.
+### Wave 1 — Research-and-data (gating; must execute to user satisfaction before Wave 3)
+
+Three issues across three repos, drafted and reviewed thoroughly:
+
+1. **[vamseeachanta/kaggle-rogii-2026#5](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/5)** (T2) — Kaggle-side research catalog. Plan drafted, awaits approval.
+2. **[vamseeachanta/llm-wiki#40](https://github.com/vamseeachanta/llm-wiki/issues/40)** (T3) — reservoir-engineering literature substrate. Plan drafted, awaits approval.
+3. **[vamseeachanta/worldenergydata#392](https://github.com/vamseeachanta/worldenergydata/issues/392)** (T3, expected) — public well-log dataset ingest. **Plan to draft next session** in `worldenergydata/docs/plans/` per that repo's conventions.
+
+Wave 1 is "executed to satisfaction" when all three issues are closed (or have shipped meaningful first-wave output: e.g., llm-wiki PR 1+2 merged, worldenergydata first dataset module merged, prior-art catalog with named pre-training corpus).
+
+### Wave 2 — T1 unblockers (can run concurrently with Wave 1; admin-light)
+
+4. **[#9](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/9)** — Kaggle path-detection bug fix. Plan drafted.
+5. **[#3](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/3)** — Phase 0.5 linear-extrapolation baseline. Plan-approved. Cheap floor experiment.
+6. **[#6](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/6)** — Submit carry-forward kernel to leaderboard (gated on [#9](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/9)). Plan drafted.
+7. **[workspace-hub#2651](https://github.com/vamseeachanta/workspace-hub/issues/2651)** — PPTX → PDF on ace-linux-2.
+
+These are independent of Wave 1 and represent zero-cost progress while research+data work runs in the background.
+
+### Wave 3 — Modeling tracks (planning blocked behind Wave 1 satisfaction)
+
+Plans for [#1](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/1) and [#2](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/2) already exist (in `plan-review`) but their *implementation* is gated on Wave 1. Plans for [#4](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/4), [#7](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/7), [#8](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/8) are **deferred** (not drafted yet). Drafting will be informed by what Wave 1 finds — e.g., if pre-training corpora exist, the [#7](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/7) sequence-model plan looks different from if they don't.
+
+8. **[#1](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/1) (Phase 1 v2 DTW)** — T2. Existing plan may need revision after Wave 1.
+9. **[#2](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/2) (Phase 2 offset wells)** — T3. Existing plan may need revision after Wave 1.
+10. **[#4](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/4) (Phase 3 GBDT)** — T2. To draft after Wave 1.
+11. **[#7](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/7) (Phase 4 sequence)** — T3. To draft after Wave 1.
+12. **[#8](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/8) (Phase 5 ensemble)** — T2. To draft after Wave 1 + after [#4](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/4)/[#7](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/7) are settled.
 
 ---
 
-## Recommended implementation order — **revised 2026-05-06**
+## Implementation order — gating-phase calendar
 
 ```
-Week 1:  #9, #3, #6 (T1 trio — unblock leaderboard, set new floor) +
-         #5 starts (research, runs as background thread for the rest of project)
-         #40 starts (literature ingest, runs as background thread; multi-week)
+Weeks 1–3:  Wave 1 (research-and-data gating phase) + Wave 2 (T1 unblockers in parallel)
+            - #5 catalog drafted and first-pass complete.
+            - #40 PR 1 (bootstrap) + PR 2 (concept pages 1–2) merged.
+            - worldenergydata#392 plan drafted, first dataset module merged.
+            - #9, #3, #6, #2651 implementations close out (T1 admin).
 
-Week 2:  #5 first-pass complete (docs/prior-art.md draft) →
-         informs #1 and #2 designs before they start.
-         #1 + #2 begin in parallel.
+Wave 1 satisfaction checkpoint (≈ end of week 3):
+  - User reviews Wave 1 outputs and confirms "executed to satisfaction."
+  - At checkpoint, draft plans for #4, #7, #8 informed by Wave 1 findings.
+  - Revise #1 and #2 plans if needed based on Wave 1 (e.g., new datasets,
+    new methodology references).
 
-Week 3-4: #4 (Phase 3 GBDT). #2 wrap-up. #5 second pass focused on
-         sequence-model literature for Phase 4.
+Weeks 4–7:  Wave 3 modeling implementation
+            - #1 (Phase 1 v2 DTW) — informed by literature.
+            - #2 (Phase 2 offset wells) — informed by literature.
+            - #4 (Phase 3 GBDT) — drafted post-Wave-1.
 
-Week 5-7: #7 (sequence model, biggest risk). #40 literature ingest
-         continues in background; reservoir-engineering wiki pages
-         begin landing.
+Weeks 8–11: #7 (Phase 4 sequence model) — pre-trained on ingested datasets
+            if any cleared license; otherwise auxiliary-only.
 
-Week 8-10: integration. #5 final pass folded into model docs.
-
-Week 11-13: #8 ensemble + Kaggle submission packaging + final submits.
-            Goal: best-informed solution, not just best-trained.
+Weeks 12–13: #8 (Phase 5 ensemble + submission packaging) — final submit.
 ```
 
-Strategic shift (per user direction 2026-05-06): **research-and-data work runs as a *parallel background thread* from week 1, not a "filler" task at the end.** The literature should be in hand before Phase 4 starts so we don't reinvent published-best-practice approaches. This costs ~10–20% of project time but raises the ceiling on the final submission's quality meaningfully.
+Strategic principle: **the "best solution" mandate means modeling decisions are anchored in literature and data, not invented in isolation.** Wave 1 is the irreducible cost of that mandate. The modeling work in Wave 3 inherits a curated substrate; without Wave 1, it would inherit only the user's intuition and the task brief.
 
-Mitigation: **always keep a deployable "safe" submission ready.** After [#3](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/3) lands, that's our safe. After each subsequent phase that beats it, the new model becomes the safe and the previous one is the fallback. Two-submission-per-day Kaggle rule means this is cheap.
+Mitigation: **always keep a deployable "safe" submission ready.** After [#3](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/3) implementation lands, that's our safe. After each subsequent phase beats it, the new model becomes the safe and the previous one becomes the fallback. The two-submission-per-day Kaggle rule means this rolling-safe pattern is cheap.
 
 ---
 
