@@ -66,3 +66,5 @@ The implementer waits for this label transition before touching any code.
 | [worldenergydata#392](https://github.com/vamseeachanta/worldenergydata/issues/392) | [2026-05-06 Public well-log datasets ingest](2026-05-06-issue-worldenergydata-392-well-logs-datasets.md) | T3 | plan-review (will migrate to worldenergydata after approval) |
 
 See [PLANNING-ROADMAP.md](PLANNING-ROADMAP.md) for the full dependency graph and recommended drafting/implementation sequencing.
+
+**Resuming after a session break?** Read [WAY-FORWARD.md](WAY-FORWARD.md) first — it's the durable handoff document with the recommended next-session sequence.

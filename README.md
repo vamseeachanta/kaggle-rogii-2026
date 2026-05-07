@@ -14,6 +14,8 @@ Competition repo for [ROGII - Wellbore Geology Prediction](https://www.kaggle.co
 
 See `docs/competition-overview.md` for the full problem and dataset spec captured from the Kaggle pages.
 
+**Resuming the project?** Start with [`docs/plans/WAY-FORWARD.md`](docs/plans/WAY-FORWARD.md) — durable handoff document with current state, plan inventory, and recommended next-session sequence.
+
 ---
 
 ## Disk layout
