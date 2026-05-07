@@ -14,7 +14,7 @@ To answer "what's the right next plan to draft?" and "what can be implemented in
 |---|---|---|---|---|
 | [#1](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/1) | Phase 1 v2 — Heel-as-reference DTW with advancing anchor | T2 | not drafted | blocked on plan |
 | [#2](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/2) | Phase 2 — Offset-well features and pad-aware CV | T3 | not drafted | blocked on plan |
-| [#3](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/3) | Phase 0.5 — Linear extrapolation baseline | T1 | **plan-review** | awaiting user approval |
+| [#3](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/3) | Phase 0.5 — Linear extrapolation baseline | T1 | **plan-approved** ✅ | ready to implement |
 | [#4](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/4) | Phase 3 — GBDT regressor over combined features | T2 | not drafted | blocked on plan |
 | [#5](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/5) | Research — public datasets and prior art | T2 | not drafted | blocked on plan |
 | [#6](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/6) | Submit carry-forward kernel to leaderboard | T1 | not drafted | blocked on [#9](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/9) and plan |
@@ -87,35 +87,48 @@ Optimistic finish: ~7 weeks of work. Aggressive but feasible inside the 13-week 
 
 ---
 
-## Recommended drafting order
+## Recommended drafting order — **revised 2026-05-06 per user direction**
 
-Draft plans in this order so each draft has stable upstream context:
+User direction (2026-05-06): "what literature or public data we can procure, we should do so ahead of time and then submit our best solution." Research-and-data threads now drafted *before* the modeling tracks so their outputs inform every modeling decision.
 
-1. **[#1](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/1) (Phase 1 v2 DTW)** — T2. Foundational. Outputs feature-vector contracts that Phase 3 + Phase 4 plans depend on.
-2. **[#2](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/2) (Phase 2 offset wells)** — T3. Independent of [#1](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/1) but introduces leave-pad-out CV that downstream plans inherit.
-3. **[#6](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/6) (submit kernel)** — T1. Trivial once [#9](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/9) lands; the plan is mostly the submit-then-record-score procedure.
-4. **[#4](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/4) (Phase 3 GBDT)** — T2. Consumes [#1](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/1) and [#2](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/2) features; the plan can name the feature contract once those are written.
-5. **[#7](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/7) (Phase 4 sequence)** — T3. Highest-uncertainty plan; benefits from having all upstream plans drafted first.
-6. **[#8](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/8) (Phase 5 ensemble)** — T2. Mostly recipes; depends on what [#4](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/4) and [#7](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/7) commit to.
-7. **[#5](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/5) (research)** — T2. Standalone; can be drafted any time but most useful before [#7](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/7) (literature on sequence models for log correlation).
-8. **[llm-wiki#40](https://github.com/vamseeachanta/llm-wiki/issues/40) (literature ingest)** — T3. Multi-week, cross-repo. Not on the competition critical path; planned last.
+Draft plans in this order:
+
+1. **[#5](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/5) (research, public datasets and prior art)** — T2. **Promoted to position 1.** Output: `docs/prior-art.md` summarizing competition-relevant datasets and ML-for-geosteering literature. Informs every downstream modeling plan.
+2. **[llm-wiki#40](https://github.com/vamseeachanta/llm-wiki/issues/40) (reservoir-engineering literature ingest)** — T3. **Promoted to position 2.** Mines the user's local PDF corpus on `/mnt/ace` (~30,499 PDFs) plus public sources; output lands in `vamseeachanta/llm-wiki`. Multi-week task; the *plan* is cheap, the *implementation* is what runs in the background.
+3. **[#1](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/1) (Phase 1 v2 DTW)** — T2.
+4. **[#2](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/2) (Phase 2 offset wells)** — T3.
+5. **[#6](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/6) (submit kernel)** — T1.
+6. **[#4](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/4) (Phase 3 GBDT)** — T2.
+7. **[#7](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/7) (Phase 4 sequence)** — T3.
+8. **[#8](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/8) (Phase 5 ensemble)** — T2.
 
 ---
 
-## Recommended implementation order
-
-After all plans are approved, implement in this sequence:
+## Recommended implementation order — **revised 2026-05-06**
 
 ```
-Week 1:  #9, #3, #6  (T1 trio — unblock leaderboard, set new floor)
-Week 2:  #1 + #2 in parallel
-Week 3-4: #4 + finish #2 if not done
-Week 5-7: #7 (sequence model, biggest risk)
-Week 8-10: integration, #5/research filling gaps
-Week 11-13: #8 ensemble + Kaggle submission packaging + final submits
+Week 1:  #9, #3, #6 (T1 trio — unblock leaderboard, set new floor) +
+         #5 starts (research, runs as background thread for the rest of project)
+         #40 starts (literature ingest, runs as background thread; multi-week)
+
+Week 2:  #5 first-pass complete (docs/prior-art.md draft) →
+         informs #1 and #2 designs before they start.
+         #1 + #2 begin in parallel.
+
+Week 3-4: #4 (Phase 3 GBDT). #2 wrap-up. #5 second pass focused on
+         sequence-model literature for Phase 4.
+
+Week 5-7: #7 (sequence model, biggest risk). #40 literature ingest
+         continues in background; reservoir-engineering wiki pages
+         begin landing.
+
+Week 8-10: integration. #5 final pass folded into model docs.
+
+Week 11-13: #8 ensemble + Kaggle submission packaging + final submits.
+            Goal: best-informed solution, not just best-trained.
 ```
 
-Slack: 0 weeks. If Phase 4 takes 6 weeks instead of 3, ensemble work compresses. If anything breaks earlier, slack disappears further.
+Strategic shift (per user direction 2026-05-06): **research-and-data work runs as a *parallel background thread* from week 1, not a "filler" task at the end.** The literature should be in hand before Phase 4 starts so we don't reinvent published-best-practice approaches. This costs ~10–20% of project time but raises the ceiling on the final submission's quality meaningfully.
 
 Mitigation: **always keep a deployable "safe" submission ready.** After [#3](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/3) lands, that's our safe. After each subsequent phase that beats it, the new model becomes the safe and the previous one is the fallback. Two-submission-per-day Kaggle rule means this is cheap.
 
