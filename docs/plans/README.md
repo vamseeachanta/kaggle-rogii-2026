@@ -57,3 +57,4 @@ The implementer waits for this label transition before touching any code.
 | Issue | Plan | Tier | Status |
 |---|---|---|---|
 | [#3](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/3) | [2026-05-06 Phase 0.5 — Linear extrapolation baseline](2026-05-06-issue-3-linear-extrapolation.md) | T1 | plan-review |
+| [#9](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/9) | [2026-05-06 BUG — Kaggle path-detection infinite-loop fix](2026-05-06-issue-9-kaggle-path-detection-fix.md) | T1 | plan-review |
