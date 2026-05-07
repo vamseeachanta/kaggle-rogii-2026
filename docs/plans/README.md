@@ -63,5 +63,6 @@ The implementer waits for this label transition before touching any code.
 | [#6](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/6) | [2026-05-06 Submit carry-forward baseline kernel to leaderboard](2026-05-06-issue-6-submit-baseline-leaderboard.md) | T1 | plan-review |
 | [#5](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/5) | [2026-05-06 Research — public datasets and prior art](2026-05-06-issue-5-research-public-datasets-prior-art.md) | T2 | plan-review |
 | [llm-wiki#40](https://github.com/vamseeachanta/llm-wiki/issues/40) | [2026-05-06 Reservoir-engineering literature ingest](2026-05-06-issue-llm-wiki-40-reservoir-engineering-literature.md) | T3 | plan-review |
+| [worldenergydata#392](https://github.com/vamseeachanta/worldenergydata/issues/392) | [2026-05-06 Public well-log datasets ingest](2026-05-06-issue-worldenergydata-392-well-logs-datasets.md) | T3 | plan-review (will migrate to worldenergydata after approval) |
 
 See [PLANNING-ROADMAP.md](PLANNING-ROADMAP.md) for the full dependency graph and recommended drafting/implementation sequencing.
