@@ -58,3 +58,8 @@ The implementer waits for this label transition before touching any code.
 |---|---|---|---|
 | [#3](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/3) | [2026-05-06 Phase 0.5 — Linear extrapolation baseline](2026-05-06-issue-3-linear-extrapolation.md) | T1 | plan-review |
 | [#9](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/9) | [2026-05-06 BUG — Kaggle path-detection infinite-loop fix](2026-05-06-issue-9-kaggle-path-detection-fix.md) | T1 | plan-review |
+| [#1](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/1) | [2026-05-06 Phase 1 v2 — Heel-as-reference DTW with advancing anchor](2026-05-06-issue-1-phase1-v2-heel-dtw.md) | T2 | plan-review |
+| [#2](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/2) | [2026-05-06 Phase 2 — Offset-well features and pad-aware CV](2026-05-06-issue-2-phase2-offset-wells.md) | T3 | plan-review |
+| [#6](https://github.com/vamseeachanta/kaggle-rogii-2026/issues/6) | [2026-05-06 Submit carry-forward baseline kernel to leaderboard](2026-05-06-issue-6-submit-baseline-leaderboard.md) | T1 | plan-review |
+
+See [PLANNING-ROADMAP.md](PLANNING-ROADMAP.md) for the full dependency graph and recommended drafting/implementation sequencing.
