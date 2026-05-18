@@ -35,3 +35,6 @@ kaggle.json
 .vscode/
 .idea/
 *.swp
+
+# Agent-context local-only scoping (added 2026-05-07 on nest-into-workspace-hub)
+.claude/
