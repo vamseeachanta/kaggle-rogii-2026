@@ -33,7 +33,12 @@ def resample_to_step(depth: np.ndarray, value: np.ndarray, step: float) -> tuple
         raise ValueError("depth and value must be matching 1-D arrays")
     if not np.all(np.diff(depth) > 0):
         raise ValueError("depth must be strictly increasing")
-    new_depth = np.arange(depth[0], depth[-1] + step / 2, step)
+    # Build the grid with linspace rather than np.arange: a float `step` in
+    # np.arange accumulates rounding error over long depth ranges and can yield
+    # a grid off by ±1 sample, which then shifts integer anchor indices
+    # downstream (review 2026-05-23). linspace pins the sample count exactly.
+    n = int(round((depth[-1] - depth[0]) / step)) + 1
+    new_depth = np.linspace(depth[0], depth[0] + (n - 1) * step, n)
     new_value = np.interp(new_depth, depth, value)
     return new_depth, new_value
 
@@ -68,6 +73,13 @@ def best_match_depth(
     q = query_gr - query_gr.mean()
     q_norm = np.linalg.norm(q)
     if q_norm == 0:
+        # Constant (flat-GR) query: correlation is undefined. A flat-GR region
+        # is exactly where the anchor prior should be trusted, so return the
+        # prior depth when one is given rather than discarding it for the
+        # series mid-point (review 2026-05-23).
+        if expected_idx is not None:
+            clamped = int(min(max(expected_idx, 0), len(ref_depth) - 1))
+            return float(ref_depth[clamped]), 0.0
         return float(ref_depth[len(ref_depth) // 2]), 0.0
 
     half = n_query // 2
@@ -126,8 +138,13 @@ def predict_tvt_via_correlation(
     out = np.full(n, np.nan, dtype=float)
     half = window_size // 2
 
-    # Build a fast lookup from depth value to reference index
+    # Build a fast lookup from depth value to reference index. ref_step is taken
+    # from the first two samples, which is only valid on a uniform grid; guard
+    # it so a non-uniform ref_depth fails loudly instead of producing garbage
+    # anchor/search indices (review 2026-05-23).
     ref_step = float(ref_depth[1] - ref_depth[0])
+    if len(ref_depth) > 1 and not np.allclose(np.diff(ref_depth), ref_step):
+        raise ValueError("ref_depth must be on a uniform grid (use resample_to_step)")
     if last_known_tvt is not None:
         anchor_idx = int(round((last_known_tvt - ref_depth[0]) / ref_step))
     else:
