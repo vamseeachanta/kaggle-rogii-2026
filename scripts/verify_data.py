@@ -48,6 +48,21 @@ def main() -> int:
     if not pptx:
         failures.append("task brief PPTX missing")
 
+    # Drift in EITHER direction matters: a re-download or partial extract can
+    # leave stray files (macOS __MACOSX/, a duplicate train/) that inflate the
+    # count/size and would otherwise pass the one-sided lower bounds silently
+    # (review 2026-05-23).
+    if len(files) > 3000:
+        failures.append(f"file count {len(files)} above expected ~2,327 (stray files?)")
+    if total_gb > 2.0:
+        failures.append(f"total size {total_gb:.2f} GB above expected ~1.33 GB (duplicate extract?)")
+    expected_top = {"train", "test", "sample_submission.csv",
+                    "AI_wellbore_geology_prediction_task_en.pptx"}
+    actual_top = {p.name for p in raw.iterdir()}
+    extras = actual_top - expected_top
+    if extras:
+        failures.append(f"unexpected top-level entries in {raw}: {sorted(extras)}")
+
     if failures:
         print("\nFAIL:")
         for f in failures:
