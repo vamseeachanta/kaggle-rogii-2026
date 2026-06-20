@@ -167,3 +167,179 @@ def rmse(y_true: np.ndarray, y_pred: np.ndarray) -> float:
         return float("nan")
     diff = y_true[mask] - y_pred[mask]
     return float(np.sqrt(np.mean(diff * diff)))
+
+
+# ---------------------------------------------------------------------------
+# v2: heel-anchored DTW with an advancing anchor (issue #1)
+# ---------------------------------------------------------------------------
+#
+# Why v1 failed (docs/decisions.md 2026-05-05): the prior was *pinned* at the
+# heel-exit TVT and the search radius grew with MD offset, so by mid-toe it
+# spanned the whole reference and correlation locked onto spurious repeats of
+# the GR signature hundreds of feet away (297 ft RMSE vs an 11.53 ft floor).
+#
+# v2 fixes three things, all in ``predict_tvt_advancing_anchor`` below:
+#
+#   1. Advancing anchor. After predicting each toe row's TVT, the anchor moves
+#      to that prediction. The next row searches a fixed, tight band around the
+#      *last* prediction, not around the far-away heel exit. The prior tracks
+#      the well instead of decaying.
+#   2. Heel as primary reference. The lateral heel carries a known
+#      (TVT_input, GR) mapping at the well's own resolution (Slide 9: lateral GR
+#      out-resolves typewell GR). We build the reference from the heel first and
+#      only fall back to a secondary reference (typewell) where the heel does
+#      not cover the toe's GR range.
+#   3. Tight search radius. ``max_search_ft`` (default 30 ft of TVT) caps how
+#      far a single row may step. Geology does not jump faster than that absent
+#      a fault, and faults are rare enough to leave to a separate fallback.
+
+
+def build_reference_from_heel(
+    heel_tvt: np.ndarray,
+    heel_gr: np.ndarray,
+    *,
+    step: float = 1.0,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Build a (TVT-grid, GR) reference series from the observed heel rows.
+
+    The heel of the same well provides a ground-truth depth-to-GR mapping
+    (``TVT_input`` is observed there). We resample it onto a uniform TVT grid so
+    the advancing-anchor search can index it by depth.
+
+    Args:
+        heel_tvt: Observed heel TVT values (``TVT_input`` over the heel), 1-D.
+        heel_gr: Heel GR values, same length as ``heel_tvt``.
+        step: TVT grid step in feet.
+
+    Returns:
+        ``(ref_depth, ref_gr)`` on a uniform ``step``-ft grid, sorted by depth.
+        Duplicate/non-monotone TVT samples (the heel can fold back on itself)
+        are collapsed by averaging GR within each TVT bin before resampling.
+    """
+    tvt = np.asarray(heel_tvt, dtype=float)
+    gr = np.asarray(heel_gr, dtype=float)
+    finite = np.isfinite(tvt) & np.isfinite(gr)
+    tvt, gr = tvt[finite], gr[finite]
+    if len(tvt) < 2:
+        raise ValueError("need at least two finite heel (tvt, gr) samples")
+
+    # Collapse to a strictly increasing TVT axis: bin by rounded TVT, average GR.
+    order = np.argsort(tvt)
+    tvt, gr = tvt[order], gr[order]
+    uniq_tvt, inv = np.unique(np.round(tvt / step) * step, return_inverse=True)
+    if len(uniq_tvt) < 2:
+        raise ValueError("heel TVT range collapses to a single grid cell")
+    sums = np.zeros(len(uniq_tvt))
+    counts = np.zeros(len(uniq_tvt))
+    np.add.at(sums, inv, gr)
+    np.add.at(counts, inv, 1.0)
+    binned_gr = sums / counts
+    return resample_to_step(uniq_tvt, binned_gr, step)
+
+
+def predict_tvt_advancing_anchor(
+    lateral_md: np.ndarray,
+    lateral_gr: np.ndarray,
+    eval_mask: np.ndarray,
+    references: list[tuple[np.ndarray, np.ndarray]],
+    *,
+    window_size: int = 51,
+    last_known_tvt: float | None = None,
+    max_search_ft: float = 30.0,
+    min_corr: float = 0.0,
+) -> np.ndarray:
+    """Predict toe TVT by advancing-anchor correlation against prioritised references.
+
+    For each eval (toe) row, in MD order:
+
+    1. Take a GR window centred on the row.
+    2. For each reference in priority order, search a band of width
+       ``±max_search_ft`` (in TVT) around the **current anchor** for the best
+       Pearson-correlation match. Use the first reference whose best correlation
+       clears ``min_corr`` and whose band overlaps the reference; otherwise hold
+       the anchor (carry-forward this row).
+    3. Set the row's prediction to the matched TVT and **advance the anchor** to
+       it, so the next row searches around this prediction rather than the heel.
+
+    The advancing anchor is what keeps the search local: the prior tracks the
+    well instead of fanning out with MD offset (the v1 failure mode).
+
+    Args:
+        lateral_md: Full-lateral MD, 1-D, monotonically increasing.
+        lateral_gr: Full-lateral GR, same length as ``lateral_md``.
+        eval_mask: bool 1-D, True where TVT must be predicted (the toe).
+        references: list of ``(ref_depth, ref_gr)`` on a uniform grid, **highest
+            priority first** (e.g. heel-built reference, then typewell).
+        window_size: GR window length around each row (odd recommended).
+        last_known_tvt: TVT at the last observed heel row; seeds the anchor. If
+            None, the first reference's mid-depth is used.
+        max_search_ft: Half-width of the TVT search band around the anchor (ft).
+        min_corr: Minimum correlation for a match to be accepted; below it the
+            row holds the anchor (carry-forward) rather than jumping to noise.
+
+    Returns:
+        Predicted TVT, same length as ``lateral_md``. Non-eval rows echo NaN.
+    """
+    md = np.asarray(lateral_md, dtype=float)
+    gr = np.asarray(lateral_gr, dtype=float)
+    n = len(md)
+    out = np.full(n, np.nan, dtype=float)
+    half = window_size // 2
+
+    if not references:
+        raise ValueError("at least one reference is required")
+
+    eval_indices = np.flatnonzero(eval_mask)
+    if len(eval_indices) == 0:
+        return out
+
+    # Per-reference grid metadata (step, span) for index<->depth conversion.
+    ref_meta = []
+    for ref_depth, ref_gr in references:
+        rd = np.asarray(ref_depth, dtype=float)
+        rg = np.asarray(ref_gr, dtype=float)
+        if len(rd) < 2 or rd.shape != rg.shape:
+            raise ValueError("each reference must be matching 1-D arrays of length >= 2")
+        ref_meta.append((rd, rg, float(rd[1] - rd[0])))
+
+    # Seed the anchor.
+    if last_known_tvt is not None and np.isfinite(last_known_tvt):
+        anchor = float(last_known_tvt)
+    else:
+        rd0 = ref_meta[0][0]
+        anchor = float(rd0[len(rd0) // 2])
+
+    for i in eval_indices:
+        lo = max(0, i - half)
+        hi = min(n, i + half + 1)
+        q = gr[lo:hi]
+        # Too short a window (lateral edge) → hold the anchor.
+        if len(q) < max(2, window_size // 2):
+            out[i] = anchor
+            continue
+
+        matched = anchor
+        for rd, rg, step in ref_meta:
+            if len(q) > len(rg):
+                continue
+            anchor_idx = int(round((anchor - rd[0]) / step))
+            radius_idx = int(round(max_search_ft / step))
+            # Skip a reference whose band does not overlap its depth span.
+            if anchor_idx + radius_idx < 0 or anchor_idx - radius_idx > len(rg) - 1:
+                continue
+            best_depth, best_corr = best_match_depth(
+                q, rg, rd,
+                expected_idx=anchor_idx, search_radius=radius_idx,
+            )
+            if best_corr >= min_corr:
+                matched = best_depth
+                break
+        # else: no reference cleared min_corr → matched stays at anchor.
+
+        # Hard-clamp the step to the search band (a reference whose band only
+        # partially overlapped could otherwise return a far center).
+        matched = float(np.clip(matched, anchor - max_search_ft, anchor + max_search_ft))
+        out[i] = matched
+        anchor = matched  # advance the anchor to this prediction
+
+    return out
