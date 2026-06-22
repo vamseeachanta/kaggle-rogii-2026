@@ -38,3 +38,6 @@ kaggle.json
 
 # Agent-context local-only scoping (added 2026-05-07 on nest-into-workspace-hub)
 .claude/
+
+# Built static Pages output (regenerated in CI)
+public/
